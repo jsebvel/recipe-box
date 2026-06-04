@@ -1,9 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import RecipeCard from '@/Components/RecipeCard.vue'
+import type { Recipe } from '@/types'
 
-defineProps({
-  recipes: Array
-})
+defineProps<{
+  recipes: Recipe[]
+}>()
 </script>
 
 <template>

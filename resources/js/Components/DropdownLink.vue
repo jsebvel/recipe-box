@@ -1,12 +1,9 @@
-<script setup>
-import { Link } from '@inertiajs/vue3';
+<script setup lang="ts">
+import { Link } from '@inertiajs/vue3'
 
-defineProps({
-    href: {
-        type: String,
-        required: true,
-    },
-});
+defineProps<{
+    href: string
+}>()
 </script>
 
 <template>

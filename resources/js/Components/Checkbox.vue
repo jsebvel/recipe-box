@@ -1,27 +1,26 @@
-<script setup>
-import { computed } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue'
 
-const emit = defineEmits(['update:checked']);
+const emit = defineEmits<{
+    'update:checked': [val: boolean | unknown[]]
+}>()
 
-const props = defineProps({
-    checked: {
-        type: [Array, Boolean],
-        required: true,
-    },
-    value: {
-        default: null,
-    },
-});
+const props = withDefaults(defineProps<{
+    checked: boolean | unknown[]
+    value?: unknown
+}>(), {
+    value: undefined,
+})
 
 const proxyChecked = computed({
     get() {
-        return props.checked;
+        return props.checked
     },
 
-    set(val) {
-        emit('update:checked', val);
+    set(val: boolean | unknown[]) {
+        emit('update:checked', val)
     },
-});
+})
 </script>
 
 <template>

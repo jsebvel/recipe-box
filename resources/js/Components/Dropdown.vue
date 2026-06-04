@@ -1,47 +1,45 @@
-<script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
-const props = defineProps({
-    align: {
-        type: String,
-        default: 'right',
-    },
-    width: {
-        type: String,
-        default: '48',
-    },
-    contentClasses: {
-        type: String,
-        default: 'py-1 bg-white',
-    },
-});
+type Align = 'left' | 'right' | 'top'
+type Width = '48'
 
-const closeOnEscape = (e) => {
+const props = withDefaults(defineProps<{
+    align?: Align
+    width?: Width
+    contentClasses?: string
+}>(), {
+    align: 'right',
+    width: '48',
+    contentClasses: 'py-1 bg-white',
+})
+
+const open = ref(false)
+
+const closeOnEscape = (e: KeyboardEvent) => {
     if (open.value && e.key === 'Escape') {
-        open.value = false;
+        open.value = false
     }
-};
+}
 
-onMounted(() => document.addEventListener('keydown', closeOnEscape));
-onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
+onMounted(() => document.addEventListener('keydown', closeOnEscape))
+onUnmounted(() => document.removeEventListener('keydown', closeOnEscape))
 
 const widthClass = computed(() => {
     return {
         48: 'w-48',
-    }[props.width.toString()];
-});
+    }[props.width]
+})
 
 const alignmentClasses = computed(() => {
     if (props.align === 'left') {
-        return 'ltr:origin-top-left rtl:origin-top-right start-0';
+        return 'ltr:origin-top-left rtl:origin-top-right start-0'
     } else if (props.align === 'right') {
-        return 'ltr:origin-top-right rtl:origin-top-left end-0';
+        return 'ltr:origin-top-right rtl:origin-top-left end-0'
     } else {
-        return 'origin-top';
+        return 'origin-top'
     }
-});
-
-const open = ref(false);
+})
 </script>
 
 <template>

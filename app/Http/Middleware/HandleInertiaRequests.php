@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Resources\RecipeResource;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -29,11 +30,33 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        return [
-            ...parent::share($request),
+        return array_merge(parent::share($request), [
+            'appName' => config('app.name'),
+            'locale' => app()->getLocale(),
+            'currentYear' => now()->year,
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user()
+                    ? ['id' => $request->user()->id, 'name' => $request->user()->name]
+                    : null
             ],
-        ];
+            'auth.recentRecipes' => \Inertia\Inertia::lazy(
+                fn() =>
+                $request->user()
+                ? $request->user()->recipes()->latest()->take(3)->get(['id', 'title'])
+                : []
+            ),
+            'flash' => [
+                'success' => \Inertia\Inertia::lazy(fn() => $request->session()->get('success')),
+                'error' => \Inertia\Inertia::lazy(fn() => $request->session()->get('error')),
+            ],
+            'activeDraft' => \Inertia\Inertia::lazy(
+                fn() =>
+                $request->user()
+                ? ($draft = $request->user()->recipes()->where('is_draft', true)->first())
+                    ? new RecipeResource($draft)
+                    : null
+                : null
+            )
+        ]);
     }
 }
