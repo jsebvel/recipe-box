@@ -38,12 +38,28 @@ class RecipeController extends Controller
             'prep_minutes' => 'required|integer|between:1,600'
         ]);
 
-        $recipe = Auth::user()->recipes()->create($validate);
+        $recipe = Auth::user()->recipes->create($validate);
 
         return redirect()->route('recipes.show', $recipe);
 
     }
 
+    public function storeDraft(Request $request)
+    {
+        $validated = $request->validate([
+            'title'=> 'nullable|string|max:255',
+            'body'=> 'nullable|string',
+            'prep_minutes'=>'nullable|integer',
+            'is_draft' => 'boolean'
+        ]);
+
+        $draft = $request->user()->recipes()->updateOrCreate(
+            ['is_draft' => true, 'author_id'=> $request->user()->id],
+            array_merge($validated, ['is_draft' => true])
+        );
+
+        return redirect()->back()->with('success', 'Borrador guardado');
+    }
     /**
      * Display the specified resource.
      */
