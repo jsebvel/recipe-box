@@ -6,6 +6,7 @@ use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Acme\RecipeSearch\RecipeSearch;
 
 class RecipeController extends Controller
 {
@@ -94,5 +95,11 @@ class RecipeController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function search(Request $request, RecipeSearch $search)
+    {
+        $results = $search->find($request-> query('q', ''));
+        return response()->json($results);
     }
 }

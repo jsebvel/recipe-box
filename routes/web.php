@@ -15,6 +15,8 @@ Route::get('/recipes', function() {
     ]);
 });
 
+Route::get('/recipes/search', [RecipeController::class, 'search'])->name('recipes.search');
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
