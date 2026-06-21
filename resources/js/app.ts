@@ -8,6 +8,8 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 
 import { createPinia } from "pinia";
 import { useDraftStore } from "./store/draftStore";
+import { createExtensionRegistry, EXTENSION_POINT_KEY } from "@/composables/useExtensionPoint";
+import RelatedRecipesPanel from "@/Components/RelatedRecipesPanel.vue";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -28,6 +30,10 @@ createInertiaApp({
 
         const draftStore = useDraftStore();
         draftStore.initFromInertia(props.initialPage.props.activeDraft ?? null);
+        const {slots, registerSlot} = createExtensionRegistry();
+        app.provide(EXTENSION_POINT_KEY, slots);
+        registerSlot("recipe.show.sidebar.after", RelatedRecipesPanel);
+
         app.mount(el);
     },
     progress: {
