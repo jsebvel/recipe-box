@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Acme\RecipeSearch\RecipeSearch;
+use App\Events\RecipeViewed;
+use App\Jobs\SendNewRecipeDigest;
 
 class RecipeController extends Controller
 {
@@ -16,7 +18,7 @@ class RecipeController extends Controller
     public function index()
     {
         return Inertia::render('Recipes/Index', [
-            'recipes'=> Recipe::with(['author', 'tags'])->latest()->get(),
+            'recipes' => Recipe::with(['author', 'tags'])->latest()->get(),
         ]);
     }
 
@@ -38,24 +40,27 @@ class RecipeController extends Controller
             'body' => 'required|string',
             'prep_minutes' => 'required|integer|between:1,600'
         ]);
+        /** @var \App\Models\User $user */
+        $user = $request->user();
 
-        $recipe = Auth::user()->recipes->create($validate);
+         $recipe = $user->recipes()->create($validate);
 
+
+        SendNewRecipeDigest::dispatch($recipe);
         return redirect()->route('recipes.show', $recipe);
-
     }
 
     public function storeDraft(Request $request)
     {
         $validated = $request->validate([
-            'title'=> 'nullable|string|max:255',
-            'body'=> 'nullable|string',
-            'prep_minutes'=>'nullable|integer',
+            'title' => 'nullable|string|max:255',
+            'body' => 'nullable|string',
+            'prep_minutes' => 'nullable|integer',
             'is_draft' => 'boolean'
         ]);
 
         $draft = $request->user()->recipes()->updateOrCreate(
-            ['is_draft' => true, 'author_id'=> $request->user()->id],
+            ['is_draft' => true, 'author_id' => $request->user()->id],
             array_merge($validated, ['is_draft' => true])
         );
 
@@ -68,6 +73,8 @@ class RecipeController extends Controller
     {
         $recipe->load(['author', 'tags']);
 
+        event(new RecipeViewed($recipe));
+
         return Inertia::render('Recipes/Show', [
             'recipe' => $recipe
         ]);
@@ -76,17 +83,27 @@ class RecipeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Recipe $recipe)
     {
-        //
+        return Inertia::render('Recipes/Edit', [
+            'recipe' => $recipe,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Recipe $recipe)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'body' => 'required|string|',
+            'prep_minutes' => 'required|integer|between:1,600',
+        ]);
+
+        $recipe->update($validated);
+        return redirect()->route('recipes.show', $recipe)
+            ->with('success', 'Receta actualizada');
     }
 
     /**
@@ -99,7 +116,7 @@ class RecipeController extends Controller
 
     public function search(Request $request, RecipeSearch $search)
     {
-        $results = $search->find($request-> query('q', ''));
+        $results = $search->find($request->query('q', ''));
         return response()->json($results);
     }
 }

@@ -6,11 +6,12 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/recipes', function() {
-    return Inertia::render('Recipes/Index', ['recipes' => [
+Route::get('/recipes', function () {
+    return Inertia::render('Recipes/Index', [
+        'recipes' => [
 
-        ['id' => 1, 'title' => 'Pasta', 'body' => 'Hierve agua...', 'prep_minutes' => 30],
-        ['id' => 2, 'title' => 'Ensalada', 'body' => 'Corta lechuga...', 'prep_minutes' => 10]
+            ['id' => 1, 'title' => 'Pasta', 'body' => 'Hierve agua...', 'prep_minutes' => 30],
+            ['id' => 2, 'title' => 'Ensalada', 'body' => 'Corta lechuga...', 'prep_minutes' => 10]
         ]
     ]);
 });
@@ -37,13 +38,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/recipes/draft', [RecipeController::class, 'storeDraft'])->name('recipes.storeDraft');
 
     //Recipes
-    Route::get('/recipes', [RecipeController::class, 'index']) ->name('recipes.index');
+    Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
     Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
     Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
     Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
-    Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
-    Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
+    Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])
+        ->middleware('recipe.owner')
+        ->name('recipes.edit');
+    Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])
+        ->middleware('recipe.owner')
+        ->name('recipes.update');
     Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
