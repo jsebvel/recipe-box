@@ -103,7 +103,7 @@ class RecipeController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'body' => 'required|string|',
+            'body' => 'required|string',
             'prep_minutes' => 'required|integer|between:1,600',
         ]);
 
@@ -115,9 +115,13 @@ class RecipeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Recipe $recipe)
     {
-        //
+        $recipe->delete();
+
+        return redirect()
+            ->route('recipes.index')
+            ->with('success', 'Receta eliminada');
     }
 
     public function search(Request $request, RecipeSearcher $search)

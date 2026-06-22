@@ -40,6 +40,12 @@ const user = computed(() => usePage().props.auth?.user ?? null);
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    :href="route('recipes.index')"
+                                    :active="route().current('recipes.index')"
+                                >
+                                    Recetas
+                                </NavLink>
                             </div>
                         </div>
 
@@ -146,6 +152,12 @@ const user = computed(() => usePage().props.auth?.user ?? null);
                             :active="route().current('dashboard')"
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('recipes.index')"
+                            :active="route().current('recipes.index')"
+                        >
+                            Recetas
                         </ResponsiveNavLink>
                     </div>
 
