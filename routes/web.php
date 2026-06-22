@@ -6,15 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/recipes', function () {
-    return Inertia::render('Recipes/Index', [
-        'recipes' => [
 
-            ['id' => 1, 'title' => 'Pasta', 'body' => 'Hierve agua...', 'prep_minutes' => 30],
-            ['id' => 2, 'title' => 'Ensalada', 'body' => 'Corta lechuga...', 'prep_minutes' => 10]
-        ]
-    ]);
-});
 
 Route::get('/recipes/search', [RecipeController::class, 'search'])->name('recipes.search');
 

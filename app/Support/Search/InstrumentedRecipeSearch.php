@@ -6,7 +6,7 @@ use Acme\RecipeSearch\RecipeSearch;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
-class InstrumentedRecipeSearch
+class InstrumentedRecipeSearch implements \App\Contracts\RecipeSearcher
 {
     public function __construct(
         private RecipeSearch $inner

@@ -13,7 +13,7 @@ class RecipeSearchServiceProvider extends ServiceProvider
     {
         //
         $this->app->bind(
-            \Acme\RecipeSearch\RecipeSearch::class,
+           \App\Contracts\RecipeSearcher::class,
             fn ($app) => new \App\Support\Search\InstrumentedRecipeSearch(
                 new \Acme\RecipeSearch\RecipeSearch()
             )

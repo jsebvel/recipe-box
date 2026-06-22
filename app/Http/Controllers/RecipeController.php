@@ -4,21 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Acme\RecipeSearch\RecipeSearch;
 use App\Events\RecipeViewed;
 use App\Jobs\SendNewRecipeDigest;
+use App\Contracts\RecipeSearcher;
 
 class RecipeController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, RecipeSearcher $search)
     {
+        $query  = $request->input('q');
+
+        $recipes = $query
+            ? $search->find($query)
+            : Recipe::with(['author', 'tags'])->latest()->get();
+
         return Inertia::render('Recipes/Index', [
-            'recipes' => Recipe::with(['author', 'tags'])->latest()->get(),
+            'recipes' => $recipes,
+            'searchTerm' => $query
         ]);
     }
 
@@ -43,7 +49,7 @@ class RecipeController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-         $recipe = $user->recipes()->create($validate);
+        $recipe = $user->recipes()->create($validate);
 
 
         SendNewRecipeDigest::dispatch($recipe);
@@ -114,7 +120,7 @@ class RecipeController extends Controller
         //
     }
 
-    public function search(Request $request, RecipeSearch $search)
+    public function search(Request $request, RecipeSearcher $search)
     {
         $results = $search->find($request->query('q', ''));
         return response()->json($results);
