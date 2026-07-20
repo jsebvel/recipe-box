@@ -19,11 +19,35 @@ export const useDraftStore = defineStore("draft", {
 
         async persist() {
             if (!this.draft) return;
-            await router.post("/recipes/draft", this.draft, {
-                onSuccess: () => {
-                    router.reload({ only: ["activeDraft"] });
+            await router.post(
+                "/recipes/draft",
+                {
+                    title: this.draft.title,
+                    body: this.draft.body,
+                    prep_minutes: this.draft.prep_minutes,
                 },
-            });
+                {
+                    onSuccess: () => {
+                        router.reload({ only: ["activeDraft"] });
+                    },
+                },
+            );
+        },
+        ensureDraft(user: { id: number; name: string }) {
+            if (this.draft) return;
+            this.draft = {
+                id: 0,
+                title: "",
+                body: "",
+                prep_minutes: 0,
+                is_draft: true,
+                author: {
+                    id: user.id,
+                    name: user.name,
+                    email: "",
+                },
+                tags: [],
+            };
         },
     },
 });

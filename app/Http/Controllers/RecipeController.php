@@ -129,4 +129,9 @@ class RecipeController extends Controller
         $results = $search->find($request->query('q', ''));
         return response()->json($results);
     }
+
+    public function draft()
+    {
+        return Inertia::render('Recipes/Draft');
+    }
 }

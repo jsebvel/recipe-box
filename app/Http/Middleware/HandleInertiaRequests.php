@@ -42,21 +42,19 @@ class HandleInertiaRequests extends Middleware
             'auth.recentRecipes' => \Inertia\Inertia::lazy(
                 fn() =>
                 $request->user()
-                ? $request->user()->recipes()->latest()->take(3)->get(['id', 'title'])
-                : []
+                    ? $request->user()->recipes()->latest()->take(3)->get(['id', 'title'])
+                    : []
             ),
             'flash' => [
                 'success' => \Inertia\Inertia::lazy(fn() => $request->session()->get('success')),
                 'error' => \Inertia\Inertia::lazy(fn() => $request->session()->get('error')),
             ],
-            'activeDraft' => \Inertia\Inertia::lazy(
-                fn() =>
-                $request->user()
-                ? ($draft = $request->user()->recipes()->where('is_draft', true)->first())
+            'activeDraft' => $request->user()
+                ? (($draft = $request->user()->recipes()->where('is_draft', true)->first())
                     ? new RecipeResource($draft)
-                    : null
-                : null
-            )
+                    : null)
+                : null,
+
         ]);
     }
 }

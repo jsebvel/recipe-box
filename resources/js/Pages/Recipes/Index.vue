@@ -12,6 +12,7 @@ defineProps<{
   <div class="p-6">
     <div class="mb-8 flex items-center justify-between">
       <h1 class="text-2xl font-bold text-gray-800">Mis Recetas</h1>
+      <Link :href="route('recipes.draft')" class="text-2xl font-bold text-gray-800 hover:underline hover:border rounded-lg p-4">Borradores </Link>
       <Link :href="route('recipes.create')"
         class="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-white hover:border border-blue-600 hover:text-blue-600">
         Crear receta
