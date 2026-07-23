@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { Link, usePage } from "@inertiajs/vue3";
 import { useDraftStore } from "@/store/draftStore";
 
 const draftStore = useDraftStore();
 const page = usePage();
+watch(
+    () => page.props.activeDraft,
+    (d) => {
+        draftStore.initFromInertia(d ?? null);
+    },
+);
 
 const draft = computed(() => draftStore.draft);
 const flash = computed(() => page.props.flash);
